@@ -91,7 +91,21 @@ struct DeconvolutionParam : public dmlc::Parameter<DeconvolutionParam> {
     if (target_shape.ndim() != 0) {
       size_t input_ndim = input.ndim();
 
-      for (unsigned int i = 0; i < ndim; i++) {
+      // Modified by Li.bs
+      // Use tag to control the calculation of pad 
+      bool calc_pad = false;
+      if (target_shape.ndim() != 0)
+      {
+          for (int i = 0; i < target_shape.ndim(); i++)
+          {
+              if (target_shape[i] != 0)
+              {
+                  calc_pad = true;
+              }
+          }
+      }
+ 
+      if (calc_pad)
         // input.ndim() can be larger than ndim, in case that the complete input
         // shape was passed and not only the ndim last ones
         o_pad[i] = stride[i] * (input[(input_ndim - ndim) + i] - 1) + DilatedKernelSize(i);
